@@ -4,6 +4,8 @@ import MessageList from './MessageList.jsx';
 import Message from './Message.jsx';
 import ChatBar from './ChatBar.jsx';
 
+// const uuidv1 = require('uuid/v1');
+
 // const messages = [
 //   {
 //     type: "incomingMessage",
@@ -40,6 +42,7 @@ import ChatBar from './ChatBar.jsx';
 //   },
 // ];
 
+
 const appData = {
   currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
   messages: [
@@ -56,33 +59,96 @@ const appData = {
 
 class App extends Component {
 
-  constructor() {
-    super();
-    this.state = appData;
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentUser: {name: "Bob"},
+      messages: [] // messages coming from the server will be stored here as they arrive
+    };
   }
 
   componentDidMount() {
+
     console.log("componentDidMount <App />");
-    setTimeout(() => {
-      console.log("Simulating incoming message");
-      // Add a new message to the list of messages in the data store
-      const newMessage = {id: 3, username: "Michelle", content: "Hello there!"};
-      const messages = this.state.messages.concat(newMessage)
-      // Update the state of the app component.
-      // Calling setState will trigger a call to render() in App and all child components.
-      this.setState({messages: messages})
-    }, 3000);
+
+    // Sets connection to websocket server
+    this.socket = new WebSocket("ws://localhost:3001");
+
+    // Display connected message once connected to websocket
+    this.socket.onopen = function (event) {
+      console.log("Connected to server");
+    };
+
+    this.socket.addEventListener("message", event => {
+
+      // console.log(event);
+
+      // The socket event data is encoded as a JSON string.
+      // This line turns it into an object
+      let data = JSON.parse(event.data);
+
+      switch(data.type) {
+      case "incomingMessage":
+        // handle incoming message
+          this.setState(previousState => ({
+            messages: [...previousState.messages, data]
+          }));
+        break;
+      case "incomingNotification":
+        // handle incoming notification
+          console.log(data);
+          this.setState(previousState => ({
+            messages: [...previousState.messages, data]
+          }));
+        break;
+      default:
+        // show an error in the console if the message type is unknown
+        throw new Error("Unknown event type " + data.type);
+    }
+
+
+
+
+    });
+
   }
 
-  onEnter(event) {
+  // Send message to websocket server
+  sendMessage = (event) => {
 
-    // console.log(testing);
+
 
     if (event.key === "Enter") {
-      console.log(event.target.value);
-      console.log("ENTER!!!!!", event);
-      // console.log(username, message);
+      const newMessage = {
+        // id: uuidv1(),
+        type: "postMessage",
+        username: this.state.currentUser.name,
+        content: event.target.value
+      }
+      this.socket.send(JSON.stringify(newMessage));
+      event.target.value = "";
     }
+  }
+
+  // Change current username
+  changeUser = (newUsername) => {
+
+    if (newUsername == "") {
+      newUsername = "Anonymous";
+    }
+
+    let notification = {
+      type: "postNotification",
+      content: `${this.state.currentUser.name} has changed their name to ${newUsername}`
+    }
+
+    this.setState({
+      currentUser: {name: newUsername}
+    });
+    // console.log(this.state.currentUser);
+
+    this.socket.send(JSON.stringify(notification));
+
   }
 
   render() {
@@ -90,7 +156,7 @@ class App extends Component {
       <React.Fragment>
         <NavBar />
         <MessageList messages={this.state.messages} />
-        <ChatBar currentUser={this.state.currentUser} onEnter={this.onEnter} />
+        <ChatBar currentUser={this.state.currentUser} sendMessage={this.sendMessage} changeUser={this.changeUser} />
       </React.Fragment>
     );
   }
