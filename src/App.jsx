@@ -63,6 +63,7 @@ class App extends Component {
     super(props);
     this.state = {
       currentUser: {name: "Bob"},
+      numUsers: 0,
       messages: [] // messages coming from the server will be stored here as they arrive
     };
   }
@@ -100,6 +101,11 @@ class App extends Component {
           this.setState(previousState => ({
             messages: [...previousState.messages, data]
           }));
+        break;
+      case "userUpdate":
+        this.setState({
+          numUsers: data.numUsers
+        })
         break;
       default:
         // show an error in the console if the message type is unknown
@@ -154,7 +160,7 @@ class App extends Component {
   render() {
     return (
       <React.Fragment>
-        <NavBar />
+        <NavBar numUsers={this.state.numUsers} />
         <MessageList messages={this.state.messages} />
         <ChatBar currentUser={this.state.currentUser} sendMessage={this.sendMessage} changeUser={this.changeUser} />
       </React.Fragment>
