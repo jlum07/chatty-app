@@ -3,7 +3,10 @@
 const express = require('express');
 const SocketServer = require('ws').Server;
 
-const uuidv1 = require('uuid/v1');
+const querystring = require('querystring');
+const fetch = require('node-fetch');
+
+const uuidv4 = require('uuid/v4');
 
 // Set the port to 3001
 const PORT = 3001;
@@ -49,7 +52,7 @@ wss.on('connection', (ws) => {
 
         const newMessage = {
           type: "incomingMessage",
-          id: uuidv1(),
+          id: uuidv4(),
           username: data.username,
           content: data.content
         }
@@ -60,13 +63,80 @@ wss.on('connection', (ws) => {
         wss.clients.forEach(function each(client) {
           client.send(JSON.stringify(newMessage));
         });
+
+
+        // Trying to setup chatbot
+
+        let qs = querystring.stringify({
+          v: '20150910',
+          lang: 'en',
+          sessionId: '123456789',
+          timezone: 'America/New_York',
+          query: data.content
+        });
+
+        // let testhead = new Headers({'Authorization': 'Bearer ae92ca0e4549496cb27e77e193b0116d'});
+
+        let options = {
+          method: 'GET',
+          headers: {
+            Authorization: 'Bearer ae92ca0e4549496cb27e77e193b0116d'
+          }
+          // header: new Headers({
+          //   'Authorization': 'Bearer ae92ca0e4549496cb27e77e193b0116d'
+          // })
+        }
+
+        fetch(`https://api.dialogflow.com/v1/query?${qs}`, options)
+          .then(resp => { return resp.json() })
+          .then(json  => {
+
+
+
+            console.log(json);
+
+            // console.log(resp.pipe);
+
+            // resp.body.pipe(process.stdout);
+            // resp.body.on('end', () => {
+            //   console.log('finished')
+            // })
+
+            if (json.result.score == 1) {
+
+
+              let botMsg = {
+                type: "incomingMessage",
+                username: "Botty",
+                id: uuidv4(),
+                content: json.result.fulfillment.speech
+              };
+
+
+              wss.clients.forEach(function each(client) {
+                client.send(JSON.stringify(botMsg));
+              });
+
+
+            }
+
+          });
+
+
+
+
+
+
+
+
+
         break;
 
       case "postNotification":
 
         const newNotification = {
           type: "incomingNotification",
-          id: uuidv1(),
+          id: uuidv4(),
           content: data.content
         }
 
