@@ -18,8 +18,6 @@ class Message extends Component {
 
     let imgArr;
 
-    // console.log(myArr);
-    // console.log(this.props.message.content);
 
     if (myArr != null) {
       imgArr = myArr.map((imgLink) => {
@@ -34,6 +32,7 @@ class Message extends Component {
         newMsg = originalMsg.replace(new RegExp(imgUrl, 'g'), "");
       });
 
+      // Tried getting
       // myArr.forEach(function (imgUrl, i) {
       //   newMsg = originalMsg.replace(new RegExp(imgUrl, 'g'), imgArr[i]);
       // });

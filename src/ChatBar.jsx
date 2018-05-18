@@ -3,9 +3,6 @@ import React, {Component} from 'react';
 class ChatBar extends Component {
 
   onEnter = (event) => {
-
-    // console.log(event.target.value);
-
     if (event.key === "Enter") {
       if (event.target.className.includes("chatbar-username")) {
         if (event.target.value != this.props.currentUser.name) {
