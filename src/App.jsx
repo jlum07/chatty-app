@@ -4,7 +4,7 @@ import MessageList from './MessageList.jsx';
 import Message from './Message.jsx';
 import ChatBar from './ChatBar.jsx';
 
-// const uuidv1 = require('uuid/v1');
+// const uuidv4 = require('uuid/v4');
 
 
 class App extends Component {
@@ -38,6 +38,8 @@ class App extends Component {
       // This line turns it into an object
       let data = JSON.parse(event.data);
 
+      // console.log(data);
+
       switch(data.type) {
       case "incomingMessage":
         // handle incoming message
@@ -56,6 +58,9 @@ class App extends Component {
         this.setState({
           numUsers: data.numUsers
         })
+        break;
+      case "botMessage":
+        console.log(data);
         break;
       default:
         // show an error in the console if the message type is unknown
@@ -76,7 +81,7 @@ class App extends Component {
 
     if (event.key === "Enter") {
       const newMessage = {
-        // id: uuidv1(),
+        // id: uuidv4(),
         type: "postMessage",
         username: this.state.currentUser.name,
         content: event.target.value
