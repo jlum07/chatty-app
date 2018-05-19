@@ -103,7 +103,7 @@ wss.on('connection', (ws) => {
                   client.send(JSON.stringify(botMsg));
                 });
 
-              }, 500);
+              }, 250);
 
             }
 

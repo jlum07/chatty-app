@@ -3,12 +3,12 @@ import React, {Component} from 'react';
 class ChatBar extends Component {
 
   onEnter = (event) => {
-    if (event.key === "Enter") {
-      if (event.target.className.includes("chatbar-username")) {
+    if (event.key === 'Enter') {
+      if (event.target.className.includes('chatbar-username')) {
         if (event.target.value != this.props.currentUser.name) {
           this.props.changeUser(event.target.value);
         }
-      } else if (event.target.className.includes("chatbar-message")) {
+      } else if (event.target.className.includes('chatbar-message')) {
         this.props.sendMessage(event);
       }
     }

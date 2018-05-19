@@ -7,7 +7,7 @@ class Message extends Component {
   render() {
 
 
-    let regEx = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g;
+    let regEx = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png)/g;
     // let regEx = /(http)?s?:?(\/\/[^"']*\.(?:png|jpg|jpeg|gif|png|svg))/g;
 
     let myArr = this.props.message.content.match(regEx);
@@ -26,7 +26,7 @@ class Message extends Component {
       });
 
 
-      myArr.forEach(function (imgUrl, i) {
+      myArr.forEach(function (imgUrl) {
         newMsg = originalMsg.replace(new RegExp(imgUrl, 'g'), "");
       });
 
