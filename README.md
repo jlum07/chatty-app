@@ -22,4 +22,4 @@ Try saying a few things to it such as:
 5. Go to <http://localhost:3000/> in your browser.
 
 ## Screen Shots
-!["Screenshot of chat"](https://github.com/jlum07/tweeter/blob/master/docs/tweet-box.png)
+!["Screenshot of chat"](https://github.com/jlum07/chatty-app/blob/master/docs/chatty-app.png)
