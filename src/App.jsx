@@ -32,43 +32,34 @@ class App extends Component {
 
     this.socket.addEventListener("message", event => {
 
-      // console.log(event);
-
       // The socket event data is encoded as a JSON string.
       // This line turns it into an object
       let data = JSON.parse(event.data);
 
-      // console.log(data);
-
       switch(data.type) {
-      case "incomingMessage":
-        // handle incoming message
-          this.setState(previousState => ({
-            messages: [...previousState.messages, data]
-          }));
-        break;
-      case "incomingNotification":
-        // handle incoming notification
-          console.log(data);
-          this.setState(previousState => ({
-            messages: [...previousState.messages, data]
-          }));
-        break;
-      case "userUpdate":
-        this.setState({
-          numUsers: data.numUsers
-        })
-        break;
-      case "botMessage":
-        console.log(data);
-        break;
-      default:
-        // show an error in the console if the message type is unknown
-        throw new Error("Unknown event type " + data.type);
-    }
-
-
-
+        case "incomingMessage":
+          // handle incoming message
+            this.setState(previousState => ({
+              messages: [...previousState.messages, data]
+            }));
+          break;
+        case "incomingNotification":
+          // handle incoming notification
+            console.log(data);
+            this.setState(previousState => ({
+              messages: [...previousState.messages, data]
+            }));
+          break;
+        case "userUpdate":
+          // Updates usercount
+          this.setState({
+            numUsers: data.numUsers
+          })
+          break;
+        default:
+          // show an error in the console if the message type is unknown
+          throw new Error("Unknown event type " + data.type);
+      }
 
     });
 
@@ -77,11 +68,8 @@ class App extends Component {
   // Send message to websocket server
   sendMessage = (event) => {
 
-
-
     if (event.key === "Enter") {
       const newMessage = {
-        // id: uuidv4(),
         type: "postMessage",
         username: this.state.currentUser.name,
         content: event.target.value
@@ -106,7 +94,6 @@ class App extends Component {
     this.setState({
       currentUser: {name: newUsername}
     });
-    // console.log(this.state.currentUser);
 
     this.socket.send(JSON.stringify(notification));
 

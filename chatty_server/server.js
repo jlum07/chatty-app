@@ -57,16 +57,13 @@ wss.on('connection', (ws) => {
           content: data.content
         }
 
-        // data.id = uuidv1();
-        // data.type = "incomingMessage";
-
         wss.clients.forEach(function each(client) {
           client.send(JSON.stringify(newMessage));
         });
 
 
-        // Trying to setup chatbot
 
+        // Query params for Dialogflow
         let qs = querystring.stringify({
           v: '20150910',
           lang: 'en',
@@ -75,36 +72,24 @@ wss.on('connection', (ws) => {
           query: data.content
         });
 
-        // let testhead = new Headers({'Authorization': 'Bearer ae92ca0e4549496cb27e77e193b0116d'});
-
+        // Options and header auth key
         let options = {
           method: 'GET',
           headers: {
             Authorization: 'Bearer ae92ca0e4549496cb27e77e193b0116d'
           }
-          // header: new Headers({
-          //   'Authorization': 'Bearer ae92ca0e4549496cb27e77e193b0116d'
-          // })
+
         }
 
+        // Fetch request to Dialogflow api
         fetch(`https://api.dialogflow.com/v1/query?${qs}`, options)
           .then(resp => { return resp.json() })
           .then(json  => {
 
-
-
-            console.log(json);
-
-            // console.log(resp.pipe);
-
-            // resp.body.pipe(process.stdout);
-            // resp.body.on('end', () => {
-            //   console.log('finished')
-            // })
-
+            // If response is successful
             if (json.result.score == 1) {
 
-
+              // Creates new message from Df reply
               let botMsg = {
                 type: "incomingMessage",
                 username: "Botty",
@@ -112,22 +97,17 @@ wss.on('connection', (ws) => {
                 content: json.result.fulfillment.speech
               };
 
+              // Sends out bot reply to clients
+              setTimeout(() => {
+                wss.clients.forEach(function each(client) {
+                  client.send(JSON.stringify(botMsg));
+                });
 
-              wss.clients.forEach(function each(client) {
-                client.send(JSON.stringify(botMsg));
-              });
-
+              }, 500);
 
             }
 
           });
-
-
-
-
-
-
-
 
 
         break;
@@ -149,22 +129,12 @@ wss.on('connection', (ws) => {
     }
 
 
-
-
-
-
-
-
-
-
-
   });
 
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('close', () => {
     console.log('Client disconnected')
-
 
 
     numUsers = {
@@ -176,10 +146,7 @@ wss.on('connection', (ws) => {
       client.send(JSON.stringify(numUsers));
     });
 
-
-
   });
-
 
 });
 

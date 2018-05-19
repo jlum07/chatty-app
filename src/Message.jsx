@@ -9,7 +9,7 @@ class Message extends Component {
 
     let regEx = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g;
     // let regEx = /(http)?s?:?(\/\/[^"']*\.(?:png|jpg|jpeg|gif|png|svg))/g;
-    // let myArr = regEx.exec(this.props.message.content);
+
     let myArr = this.props.message.content.match(regEx);
 
     let originalMsg = this.props.message.content;
@@ -25,14 +25,12 @@ class Message extends Component {
          // return (<div dangerouslySetInnerHTML={{__html: <img src={imgLink} alt="chatty img" /> }} />)
       });
 
-      // console.log(imgArr);
-      console.log(newMsg);
 
       myArr.forEach(function (imgUrl, i) {
         newMsg = originalMsg.replace(new RegExp(imgUrl, 'g'), "");
       });
 
-      // Tried getting
+      // This would be used to try to get an inline image replacement
       // myArr.forEach(function (imgUrl, i) {
       //   newMsg = originalMsg.replace(new RegExp(imgUrl, 'g'), imgArr[i]);
       // });
@@ -40,10 +38,7 @@ class Message extends Component {
       // https://assets.marthastewart.com/styles/wmax-300/d33/vanilla-icecream-0611med107092des/vanilla-icecream-0611med107092des_vert.jpg
       // http://www.readersdigest.ca/wp-content/uploads/2015/11/gourmet-burger-1024x666.jpg
 
-      console.log(newMsg);
-
     }
-
 
     return (
       <React.Fragment>
